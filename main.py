@@ -1,3 +1,4 @@
+import copy
 import math
 
 
@@ -11,6 +12,15 @@ def show_board(board):
         print(row[0] + " " + row[1] + " " + row[2] + " | " +
               row[3] + " " + row[4] + " " + row[5] + " | " +
               row[6] + " " + row[7] + " " + row[8])
+
+
+def set_board():
+    preset_board = []
+    for i in range(9):
+        row = str(input("Enter row %d values (0 for blank): " % (i + 1)))
+        preset_board.append(list(row))
+
+    return preset_board
 
 
 class Simple_Sudoku_Solver:
@@ -51,8 +61,10 @@ class Simple_Sudoku_Solver:
 
     def simple_solve(self):
         possibilities = self.list_possibilities(self.board)
+        iterations = 0
 
         while not self.solved:
+            iterations += 1
             for y in range(9):
                 for x in range(9):
                     unique = set(self.all_number)
@@ -72,6 +84,9 @@ class Simple_Sudoku_Solver:
                         possibilities[y][x] = list(unique & set(possibilities[y][x]))
 
             correct = True
+            old_possibilities = copy.deepcopy(possibilities)
+            print(iterations)
+            print(possibilities)
 
             for y in range(9):
                 for x in range(9):
@@ -82,10 +97,20 @@ class Simple_Sudoku_Solver:
                         correct = False
 
             if not correct:
-                possibilities = self.list_possibilities(possibilities)
+                new_possibilities = self.list_possibilities(possibilities)
+                # if old_possibilities != new_possibilities:
+                #     possibilities = new_possibilities
+                if iterations == 15:
+                    print("Sudoku too complex, cannot solve, here is incomplete answer")
+                    print(iterations)
+                    return possibilities
+
+                possibilities = new_possibilities
+
 
             self.solved = correct
 
+        print(iterations)
         return possibilities
 
     def check_solution(self, solution):
@@ -116,20 +141,20 @@ class Simple_Sudoku_Solver:
         return correct
 
 
-board = [["0", "0", "0", "0", "0", "0", "0", "8", "0"],
-         ["6", "8", "0", "4", "7", "0", "0", "2", "0"],
-         ["0", "1", "9", "5", "0", "8", "6", "4", "7"],
-         ["0", "6", "0", "9", "0", "0", "0", "0", "4"],
-         ["3", "4", "2", "6", "8", "0", "0", "0", "0"],
-         ["1", "9", "0", "0", "5", "0", "8", "3", "0"],
-         ["0", "0", "0", "7", "2", "0", "4", "0", "3"],
-         ["0", "0", "6", "0", "0", "5", "0", "1", "0"],
-         ["0", "0", "3", "8", "9", "1", "5", "0", "0"]]
+board = [["2", "5", "0", "0", "0", "3", "0", "9", "1"],
+         ["3", "0", "9", "0", "0", "0", "7", "2", "0"],
+         ["0", "0", "1", "0", "0", "6", "3", "0", "0"],
+         ["0", "0", "0", "0", "6", "8", "0", "0", "3"],
+         ["0", "1", "0", "0", "4", "0", "0", "0", "0"],
+         ["6", "0", "3", "0", "0", "0", "0", "5", "0"],
+         ["1", "3", "2", "0", "0", "0", "0", "7", "0"],
+         ["0", "0", "0", "0", "0", "4", "0", "6", "0"],
+         ["7", "6", "4", "0", "1", "0", "0", "0", "0"]]
+
+# board = set_board()
 
 print("Puzzle: ")
-
 show_board(board)
-
 print("")
 
 solver = Simple_Sudoku_Solver(board)
