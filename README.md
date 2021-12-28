@@ -8,5 +8,6 @@ said block will contain that value. After the program iterates through every blo
 remaining undetermined blocks will be cleared. The board will be fed through the function that lists all possibilities 
 for each block again, this time with the determined values from the previous iteration. 
 
-This repeats until a solution is found, or if no additional values can be added to the
-board, which is when we know the sudoku is too complex for this method. 
+This repeats until a solution is found, or if no additional values can be added to the board, which is when we know 
+the sudoku is too complex for this method. Note, this algorithm does not aim to solve all sudokus. It simply solves 
+those that can be solved by basic logical deductions. 
