@@ -2,9 +2,9 @@ import copy
 import math
 
 
-def show_board(board):
-    for i in range(len(board)):
-        row = board[i]
+def show_board(entry):
+    for i in range(len(entry)):
+        row = entry[i]
 
         if i % 3 == 0 and i != 0:
             print("---------------------")
@@ -65,28 +65,34 @@ class Simple_Sudoku_Solver:
 
         while not self.solved:
             iterations += 1
+            old_possibilities = copy.deepcopy(possibilities)
+
             for y in range(9):
                 for x in range(9):
-                    unique = set(self.all_number)
+                    row_unique = set(self.all_number)
+                    column_unique = set(self.all_number)
+                    square_unique = set(self.all_number)
+
                     if len(possibilities[y][x]) != 1:
                         for k in range(9):
                             if x != k:
-                                unique = unique - set(possibilities[y][k])
+                                row_unique = row_unique - set(possibilities[y][k])
                             if y != k:
-                                unique = unique - set(possibilities[k][x])
+                                column_unique = column_unique - set(possibilities[k][x])
                         for i in range(3):
                             for j in range(3):
                                 if x != math.floor(x / 3) * 3 + i or y != math.floor(y / 3) * 3 + j:
-                                    unique = unique - set(
+                                    square_unique = square_unique - set(
                                         possibilities[math.floor(y / 3) * 3 + j][math.floor(x / 3) * 3 + i])
 
-                    if len(list(unique & set(possibilities[y][x]))) == 1:
-                        possibilities[y][x] = list(unique & set(possibilities[y][x]))
+                    if len(list(row_unique & set(possibilities[y][x]))) == 1:
+                        possibilities[y][x] = list(row_unique & set(possibilities[y][x]))
+                    elif len(list(column_unique & set(possibilities[y][x]))) == 1:
+                        possibilities[y][x] = list(column_unique & set(possibilities[y][x]))
+                    elif len(list(square_unique & set(possibilities[y][x]))) == 1:
+                        possibilities[y][x] = list(square_unique & set(possibilities[y][x]))
 
             correct = True
-            old_possibilities = copy.deepcopy(possibilities)
-            print(iterations)
-            print(possibilities)
 
             for y in range(9):
                 for x in range(9):
@@ -98,19 +104,16 @@ class Simple_Sudoku_Solver:
 
             if not correct:
                 new_possibilities = self.list_possibilities(possibilities)
-                # if old_possibilities != new_possibilities:
-                #     possibilities = new_possibilities
-                if iterations == 15:
-                    print("Sudoku too complex, cannot solve, here is incomplete answer")
-                    print(iterations)
+
+                if old_possibilities != new_possibilities:
+                    possibilities = new_possibilities
+                else:
+                    print("Sudoku is too complex for this method, unsolvable after %d iterations" % iterations)
                     return possibilities
-
-                possibilities = new_possibilities
-
 
             self.solved = correct
 
-        print(iterations)
+        print(str(iterations) + " iterations used")
         return possibilities
 
     def check_solution(self, solution):
@@ -141,17 +144,17 @@ class Simple_Sudoku_Solver:
         return correct
 
 
-board = [["2", "5", "0", "0", "0", "3", "0", "9", "1"],
-         ["3", "0", "9", "0", "0", "0", "7", "2", "0"],
-         ["0", "0", "1", "0", "0", "6", "3", "0", "0"],
-         ["0", "0", "0", "0", "6", "8", "0", "0", "3"],
-         ["0", "1", "0", "0", "4", "0", "0", "0", "0"],
-         ["6", "0", "3", "0", "0", "0", "0", "5", "0"],
-         ["1", "3", "2", "0", "0", "0", "0", "7", "0"],
-         ["0", "0", "0", "0", "0", "4", "0", "6", "0"],
-         ["7", "6", "4", "0", "1", "0", "0", "0", "0"]]
+# board = [["0", "0", "0", "0", "6", "8", "0", "3", "0"],
+#          ["1", "9", "0", "0", "0", "0", "0", "0", "0"],
+#          ["8", "0", "3", "1", "0", "0", "2", "0", "0"],
+#          ["4", "0", "0", "0", "5", "1", "0", "6", "0"],
+#          ["7", "0", "0", "0", "2", "0", "0", "0", "4"],
+#          ["0", "0", "0", "0", "7", "0", "8", "0", "0"],
+#          ["0", "1", "0", "0", "0", "5", "0", "0", "7"],
+#          ["0", "0", "4", "0", "0", "0", "0", "0", "0"],
+#          ["0", "5", "0", "0", "3", "0", "1", "0", "0"]]
 
-# board = set_board()
+board = set_board()
 
 print("Puzzle: ")
 show_board(board)
